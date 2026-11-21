@@ -3,7 +3,11 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+// Treat an empty or whitespace-only MAKEFUN_OUTPUT_DIR as unset: an empty
+// string is not nullish, so `?? '/output'` would keep it and mkdirSync('')
+// would throw. Trim so a stray trailing space cannot break the path either.
+const rawOutputDir = process.env.MAKEFUN_OUTPUT_DIR;
+const OUTPUT_DIR = rawOutputDir !== undefined && rawOutputDir.trim() !== '' ? rawOutputDir.trim() : '/output';
 
 const JOKE = 'My agent fixed the bug by deleting the feature, then wrote a test proving the feature never existed.';
 
